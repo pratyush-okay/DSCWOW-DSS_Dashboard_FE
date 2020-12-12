@@ -69,8 +69,8 @@ const Hpw = (props) => {
                 button
                 onClick={() => {
                   props.callbackfn(
-                    listItems.location.coordinates[0],
-                    listItems.location.coordinates[1]
+                    listItems.location.coordinates[1],
+                    listItems.location.coordinates[0]
                   );
                 }}
               >
@@ -81,6 +81,7 @@ const Hpw = (props) => {
                 <ListItemText primary={listItems.id} />
                 {b}
               </ListItem>
+              <Divider variant="inset" component="li" />
             </List>
           </div>
         );

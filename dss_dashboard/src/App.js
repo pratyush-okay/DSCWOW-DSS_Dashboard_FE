@@ -16,6 +16,11 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import { server_addr } from "./config.js";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
 // import MenuIcon from "@material-ui/icons/Menu";
 // import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 // import NotificationsIcon from "@material-ui/icons/Notifications";
@@ -41,6 +46,12 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
+  },
+  root2: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
@@ -126,9 +137,13 @@ export function Dashboard() {
   const [privatelong, setprivateLong] = React.useState(73.170662);
   const [policelat, setpoliceLat] = React.useState(22.300969);
   const [policelong, setpoliceLong] = React.useState(73.171123);
+  const [signallat, setsignalLat] = React.useState(23.0);
+  const [signallong, setsignalLong] = React.useState(73, 17);
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   function callback(lat, long) {
+    setsignalLat(lat);
+    setsignalLong(long);
     const apiUrl = `http://${server_addr}/adss/coords`;
     const requestOptions = {
       method: "POST",
@@ -151,6 +166,15 @@ export function Dashboard() {
   return (
     <div className={classes.root}>
       <main className={classes.content}>
+        <div className={classes.root2}>
+          <AppBar position="static">
+            <Toolbar variant="dense">
+              <Typography variant="h5" align="'center'" color="inherit">
+                Advanced Distributed Surveillance System
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </div>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
@@ -164,13 +188,15 @@ export function Dashboard() {
                   privatelong={privatelong}
                   policelat={policelat}
                   policelong={policelong}
+                  signallat={signallat}
+                  signallong={signallong}
                 />
               </Paper>
             </Grid>
             {/* Recent Deposits */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                <Spw />
+                <Spw callbackfn={callback} />
               </Paper>
             </Grid>
             {/* Recent Orders */}

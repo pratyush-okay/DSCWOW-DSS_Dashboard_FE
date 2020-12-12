@@ -25,7 +25,7 @@ function ListItemLink(props) {
   return <ListItem button component="a" {...props} />;
 }
 
-const Spw = () => {
+const Spw = (props) => {
   const [SpwList, setSpwList] = useState([]);
   useTimeout(() => {
     const apiUrl = `http://${server_addr}/civic/warning`;
@@ -65,7 +65,15 @@ const Spw = () => {
         return (
           <div>
             <List component="nav" aria-label="secondary mailbox folders">
-              <ListItem button>
+              <ListItem
+                button
+                onClick={() => {
+                  props.callbackfn(
+                    listItems.location.coordinates[1],
+                    listItems.location.coordinates[0]
+                  );
+                }}
+              >
                 {a}
                 {/* <ListItemIcon>
                 <WifiIcon />
@@ -73,6 +81,7 @@ const Spw = () => {
                 <ListItemText primary={listItems.id} />
                 {b}
               </ListItem>
+              <Divider variant="inset" component="li" />
             </List>
           </div>
         );

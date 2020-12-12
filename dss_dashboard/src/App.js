@@ -15,13 +15,14 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
-
+import { server_addr } from "./config.js";
 // import MenuIcon from "@material-ui/icons/Menu";
 // import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 // import NotificationsIcon from "@material-ui/icons/Notifications";
 import Spw from "./spw";
 import Hpw from "./hpw";
 import Gmap from "./maps";
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -119,14 +120,34 @@ const useStyles = makeStyles((theme) => ({
 export function Dashboard() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const [publiclat, setpublicLat] = React.useState(22.286132);
+  const [publiclong, setpublicLong] = React.useState(73.165082);
+  const [privatelat, setprivateLat] = React.useState(22.291454);
+  const [privatelong, setprivateLong] = React.useState(73.170662);
+  const [policelat, setpoliceLat] = React.useState(22.300969);
+  const [policelong, setpoliceLong] = React.useState(73.171123);
 
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  function callback(lat, long) {
+    const apiUrl = `http://${server_addr}/adss/coords`;
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ coords: { x: long, y: lat } }),
+    };
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        console.log(data[0].location.coordinates[1]);
+        setpublicLat(data[0].location.coordinates[1]);
+        setpublicLong(data[0].location.coordinates[0]);
+        setprivateLat(data[1].location.coordinates[1]);
+        setprivateLong(data[1].location.coordinates[0]);
+        setpoliceLat(data[2].location.coordinates[1]);
+        setpoliceLong(data[2].location.coordinates[0]);
+      });
+  }
   return (
     <div className={classes.root}>
       <main className={classes.content}>
@@ -136,7 +157,14 @@ export function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                <Gmap />
+                <Gmap
+                  publiclat={publiclat}
+                  publiclong={publiclong}
+                  privatelat={privatelat}
+                  privatelong={privatelong}
+                  policelat={policelat}
+                  policelong={policelong}
+                />
               </Paper>
             </Grid>
             {/* Recent Deposits */}
@@ -146,7 +174,7 @@ export function Dashboard() {
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <h1>High priority Warnings</h1>
+                <Hpw callbackfn={callback} />
               </Paper>
             </Grid>
           </Grid>
